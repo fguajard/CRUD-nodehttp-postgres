@@ -4,15 +4,7 @@ const url = require("url");
 const {insertar, consultar,editar,eliminar} = require("./db/consultas")
 
 const server = http
-  .createServer(async (req, res) => {
-    let usuariosJson
-    try {
-      usuariosJson = JSON.parse(fs.readFileSync("Usuarios.json", "utf8"));
-    } catch (error) {
-      console.log(error);
-      res.statusCode = 500;
-      res.end(JSON.stringify(error));
-    }
+  .createServer(async (req, res) => {    
     //RUTAS CLIENTE
     if (req.url == "/") {
       try {
