@@ -1,9 +1,10 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
+const {insertar, consultar,editar,eliminar} = require("./db/consultas")
 
 const server = http
-  .createServer((req, res) => {
+  .createServer(async (req, res) => {
     let usuariosJson
     try {
       usuariosJson = JSON.parse(fs.readFileSync("Usuarios.json", "utf8"));
@@ -107,19 +108,32 @@ const server = http
       }
     }
 
+    // else if (req.url == "/fecha" && req.method == "GET") {
+    //   try {
+    //     const date = await getDate()
+    //     res.writeHead(200, { "Content-Type": "application/json" });
+    //     res.end(JSON.stringify(date));
+    //   } catch (error) {
+    //     console.log(`error al leer Fecha ${error}`);
+    //     res.statusCode = 500;
+    //     res.end("Fecha no disponible");
+    //   }
+    // }
+
     // RUTAS API REST
-    else if (req.url == "/usuarios" && req.method == "GET") {
+    else if (req.url == "/ejercicios" && req.method == "GET") {
       try {
+        const ejercicios = await consultar()
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(usuariosJson));
+        res.end(JSON.stringify(ejercicios));
       } catch (error) {
-        console.log(`error al leer Usuarios ${error}`);
+        console.log(`error al leer Ejercicios ${error}`);
         res.statusCode = 500;
-        res.end("Usuarios no Disponibles");
+        res.end("Ejercicios no Disponibles");
       }
     } 
     
-    else if (req.url === "/usuarios" && req.method === "POST") {             
+    else if (req.url === "/ejercicios" && req.method === "POST") {             
         let body = ""
         req.on("data", (chunk) => {           
            try {
@@ -128,25 +142,48 @@ const server = http
             console.log(`error al parsear ${error}`);
            }                  
         });               
-        req.on("end", () => {  
+        req.on("end", async () => {  
           if(!body){
             res.statusCode = 500;
-            return res.end("Usuario no Agregado"); 
-          }        
-          usuariosJson.push(body);
-          fs.writeFileSync("Usuarios.json", JSON.stringify(usuariosJson));
+            return res.end("Ejercicio no Agregado"); 
+          }
+          const datos = Object.values(body) 
+          console.log(body);  
+          const ejercicioAgregado = await insertar(datos)
           res.writeHead(201, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(body));
+          res.end(JSON.stringify(ejercicioAgregado));
         });              
         
     } 
+
+    else if (req.url === "/ejercicios" && req.method === "PUT") {             
+      let body = ""
+      req.on("data", (chunk) => {           
+         try {
+          body = JSON.parse(chunk)     
+         } catch (error) {
+          console.log(`error al parsear ${error}`);
+         }                  
+      });               
+      req.on("end", async () => {  
+        if(!body){
+          res.statusCode = 500;
+          return res.end("Ejercicio no Editado"); 
+        }
+        const datos = Object.values(body) 
+        console.log(datos);  
+        const ejercicioEditado = await editar(datos)
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(ejercicioEditado));
+      });              
+      
+  } 
     
-    else if (req.url.startsWith("/usuarios") && req.method === "DELETE") {
+    else if (req.url.startsWith("/ejercicios") && req.method === "DELETE") {
       try {
-        const { index } = url.parse(req.url, true).query;        
-        if (index) {
-          const usuarioEliminado = usuariosJson.splice(index, 1);
-          fs.writeFileSync("Usuarios.json", JSON.stringify(usuariosJson));
+        const { nombre } = url.parse(req.url, true).query;        
+        if (nombre) {
+          const usuarioEliminado = await eliminar(nombre)          
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(usuarioEliminado));
         }
@@ -160,39 +197,7 @@ const server = http
       }
     } 
     
-    else if (req.url.startsWith("/usuarios") && req.method === "PUT") {
-      try {
-        const { index } = url.parse(req.url, true).query;
-        if (index) {
-          let body = ""
-          req.on("data", (chunk) => {           
-             try {
-              body = JSON.parse(chunk)     
-             } catch (error) {
-              console.log(`error al parsear ${error}`);
-             }                  
-          });
-          req.on("end", () => {
-            if(!body){
-              res.statusCode = 500;
-              return res.end("Usuario no Agregado"); 
-            }     
-            usuariosJson[index] = body;
-            fs.writeFileSync("Usuarios.json", JSON.stringify(usuariosJson));
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(body));
-          });
-          fs.writeFileSync("Usuarios.json", JSON.stringify(usuariosJson));
-        }
-        else{
-          throw "Elemento en query string es invalido";
-        }
-      } catch (error) {
-        console.log(`error al alterar un usuarios ${error}`);
-        res.statusCode = 500;
-        res.end("Update fallido");
-      }
-    } 
+    
     // RUTA 404
     else {
       try {

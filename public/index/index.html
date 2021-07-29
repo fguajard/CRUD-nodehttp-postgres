@@ -11,25 +11,85 @@
     <link rel="stylesheet" href="boostrapcss" />
   </head>
   <body>
-    <h1 class="text-center">Contenido Aqui</h1>
+    <h1 class="text-center">CRUD</h1>
 
+    <div class="container">
+      <div class="row w-100">
+        <div class="col-12 col-sm-4">
+          <form id="insertar">
+            <fieldset>
+              <legend>Agregar nuevo ejercicio</legend>
+              Nombre: <input class="form-control" name="nombre" /> <br />
+              Series:
+              <input class="form-control" maxlength="3" name="series" /> <br />
+              Repeticiones:
+              <input class="form-control" maxlength="3" name="repeticiones" />
+              <br />
+              Descanso:
+              <input class="form-control" maxlength="3" name="descanso" />
+              <br />
+              <button class="btn btn-primary">Agregar</button>
+            </fieldset>
+          </form>
+        </div>
+        <div class="col-12 col-sm-4">
+          <form id="editar">
+            <fieldset>
+              <legend>Editar ejercicio</legend>
+              Nombre:
+              <select class="form-control">
+                <option selected disabled>Seleccione un ejercicio</option>
+              </select>
+              <br />
+              Series:
+              <input class="form-control" maxlength="3" name="series" /> <br />
+              Repeticiones:
+              <input class="form-control" maxlength="3" name="repeticiones" />
+              <br />
+              Descanso:
+              <input class="form-control" maxlength="3" name="descanso" />
+              <br />
+              <button class="btn btn-warning">Editar</button>
+            </fieldset>
+          </form>
+        </div>
+        <div class="col-12 col-sm-4">
+          <form id="eliminar">
+            <fieldset>
+              <legend>Eliminar ejercicio</legend>
+              Nombre:
+              <select class="form-control">
+                <option selected disabled>Seleccione un ejercicio</option>
+              </select>
+              <br />
+              <button class="btn btn-danger">Eliminar</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-3">
+      <table border="solid">
+        <thead>
+          <th>Nombre</th>
+          <th>Series</th>
+          <th>Repeticiones</th>
+          <th>Descanso</th>
+        </thead>
+
+        <tbody></tbody>
+      </table>
+    </div>
 
     <!-- Axios -->
-    <script
-      src="axios"      
-    ></script>
+    <script src="axios"></script>
 
     <!-- Bootsrap -->
 
-    <script
-      src="jquery"     
-    ></script>
-    <script
-      src="popper"     
-    ></script>
-    <script
-      src="boostrapjs"      
-    ></script>
+    <script src="jquery"></script>
+    <script src="popper"></script>
+    <script src="boostrapjs"></script>
 
     <script src="javascript"></script>
   </body>
